@@ -4,22 +4,31 @@
 
 
 
-//TODO: connect graphviz
-
-
-int  main(void)
+int main(void)
 {
-    int capacity = 8;
-    list_t list = {};
-    dump_file dumpFile = debugFileCreate ();
+    dump_file dumpFile  = debugFileCreate();
+    list_t myList       = {};
+    size_t capacity     = 20;
 
-    listInit(&list, capacity, &dumpFile);
-    listDump(&list, &dumpFile);
-    insertElem(&list, 10, 0, &dumpFile);
-    listDump(&list, &dumpFile);
-    insertElem(&list, 20, 1, &dumpFile);
-    listDump(&list, &dumpFile);
-    insertElem(&list, 30, 2, &dumpFile);
+    listInit(&myList, capacity, &dumpFile);
+    list_position_t pos= {};
+    pos.pos = 0;
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
+    insertElem(&myList, 10, &pos, &pos, &dumpFile);
 
-    listDump(&list, &dumpFile);
+    listDump(&myList, &dumpFile);
+
 }
+

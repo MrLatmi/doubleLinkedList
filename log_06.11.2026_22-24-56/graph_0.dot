@@ -1,0 +1,36 @@
+digraph G {
+  rankdir=LR;
+  bgcolor="#0a0c10";
+  splines=ortho;
+  nodesep=0.8;
+  node[shape=Mrecord, style=filled, fillcolor="#b82222", color="#4c0000", fontname=Monospace, fontcolor="#65B7B7"];
+  edge[color="#f9f9f7", arrowhead=normal];
+  {rank = same; graph_0; main}
+  main  [shape=Mrecord, label="Main data", style="filled", fillcolor="#1ca8a3", color="#192832", fontcolor ="#131515"];
+  free  [shape=Mrecord, label="Free \<3\>", style="filled", fillcolor="#1ca8a3", color="#192832", fontcolor ="#131515"];
+  {rank = same; free_3; free}
+    graph_0 [shape=Mrecord, label="position \<0\>| data \<3565\>| {next \<1\>| prev \<2\>}", style="filled", fillcolor="#27512e", color="#092604", fontcolor ="#65B7B7"];
+    graph_0 -> graph_1 [style=invis, weight=100];
+    graph_1 [shape=Mrecord, label="position \<1\>| data \<10\>| {next \<2\>| prev \<0\>}", style="filled", fillcolor="#27512e", color="#092604", fontcolor ="#65B7B7"];
+    graph_1 -> graph_2 [style=invis, weight=100];
+    graph_2 [shape=Mrecord, label="position \<2\>| data \<10\>| {next \<0\>| prev \<1\>}", style="filled", fillcolor="#27512e", color="#092604", fontcolor ="#65B7B7"];
+    free_3 [shape=Mrecord, label="position \<3\>| next \<4\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_3 -> free_4 [style=invis, weight=100];
+    free_4 [shape=Mrecord, label="position \<4\>| next \<5\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_4 -> free_5 [style=invis, weight=100];
+    free_5 [shape=Mrecord, label="position \<5\>| next \<6\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_5 -> free_6 [style=invis, weight=100];
+    free_6 [shape=Mrecord, label="position \<6\>| next \<7\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_6 -> free_7 [style=invis, weight=100];
+    free_7 [shape=Mrecord, label="position \<7\>| next \<18446744073709551515\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    graph_0 -> graph_1 [constraint=false];
+    graph_0 -> graph_2 [constraint=false];
+    graph_1 -> graph_2 [constraint=false];
+    graph_1 -> graph_0 [constraint=false];
+    graph_2 -> graph_0 [constraint=false];
+    graph_2 -> graph_1 [constraint=false];
+    free_3 -> free_4 [constraint=false];
+    free_4 -> free_5 [constraint=false];
+    free_5 -> free_6 [constraint=false];
+    free_6 -> free_7 [constraint=false];
+}

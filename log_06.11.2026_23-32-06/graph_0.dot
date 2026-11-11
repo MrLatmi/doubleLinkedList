@@ -1,0 +1,55 @@
+digraph G {
+  rankdir=LR;
+  bgcolor="#0a0c10";
+  splines=ortho;
+  nodesep=0.8;
+  node[shape=Mrecord, style=filled, fillcolor="#b82222", color="#4c0000", fontname=Monospace, fontcolor="#65B7B7"];
+  edge[color="#f9f9f7", arrowhead=normal];
+  {rank = same; graph_0; main}
+  main  [shape=Mrecord, label="Main data", style="filled", fillcolor="#1ca8a3", color="#192832", fontcolor ="#131515"];
+  free  [shape=Mrecord, label="Free \<15\>", style="filled", fillcolor="#1ca8a3", color="#192832", fontcolor ="#131515"];
+  {rank = same; free_15; free}
+    free_15 [shape=Mrecord, label="position \<15\>| next \<16\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_15 -> free_16 [style=invis, weight=100];
+    free_16 [shape=Mrecord, label="position \<16\>| next \<17\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_16 -> free_17 [style=invis, weight=100];
+    free_17 [shape=Mrecord, label="position \<17\>| next \<18\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_17 -> free_18 [style=invis, weight=100];
+    free_18 [shape=Mrecord, label="position \<18\>| next \<19\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    free_18 -> free_19 [style=invis, weight=100];
+    free_19 [shape=Mrecord, label="position \<19\>| next \<18446744073709551515\>", style="filled", fillcolor="#ddaf0b", color="#8e6a06", fontcolor ="#302214"];
+    graph_0 -> graph_1 [constraint=false];
+    graph_0 -> graph_14 [constraint=false];
+    graph_1 -> graph_2 [constraint=false];
+    graph_1 -> graph_0 [constraint=false];
+    graph_2 -> graph_3 [constraint=false];
+    graph_2 -> graph_1 [constraint=false];
+    graph_3 -> graph_4 [constraint=false];
+    graph_3 -> graph_2 [constraint=false];
+    graph_4 -> graph_5 [constraint=false];
+    graph_4 -> graph_3 [constraint=false];
+    graph_5 -> graph_6 [constraint=false];
+    graph_5 -> graph_4 [constraint=false];
+    graph_6 -> graph_7 [constraint=false];
+    graph_6 -> graph_5 [constraint=false];
+    graph_7 -> graph_8 [constraint=false];
+    graph_7 -> graph_6 [constraint=false];
+    graph_8 -> graph_9 [constraint=false];
+    graph_8 -> graph_7 [constraint=false];
+    graph_9 -> graph_10 [constraint=false];
+    graph_9 -> graph_8 [constraint=false];
+    graph_10 -> graph_11 [constraint=false];
+    graph_10 -> graph_9 [constraint=false];
+    graph_11 -> graph_12 [constraint=false];
+    graph_11 -> graph_10 [constraint=false];
+    graph_12 -> graph_13 [constraint=false];
+    graph_12 -> graph_11 [constraint=false];
+    graph_13 -> graph_14 [constraint=false];
+    graph_13 -> graph_12 [constraint=false];
+    graph_14 -> graph_0 [constraint=false];
+    graph_14 -> graph_13 [constraint=false];
+    free_15 -> free_16 [constraint=false];
+    free_16 -> free_17 [constraint=false];
+    free_17 -> free_18 [constraint=false];
+    free_18 -> free_19 [constraint=false];
+}

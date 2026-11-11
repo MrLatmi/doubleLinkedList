@@ -8,6 +8,8 @@
 #include "list.h"
 #include "formatingPrint.h"
 
+#include "dumpList.cpp"
+
 #ifdef LIST_DEBUG
 
 
@@ -39,8 +41,10 @@ dump_file debugFileCreate(void)
         dump_file errorStruct = {};
         return errorStruct;
     }
-
+//TODO: delete magic numbers, create FILE_PATH_LENGTH
     char filePath[100];
+
+
     snprintf(filePath, sizeof(filePath), "%s/LogFile.htm", folderName);
     FILE* debugFile = fopen(filePath, "ab");
 
@@ -54,11 +58,10 @@ dump_file debugFileCreate(void)
     dump_file debugFileStruct  = {};
     debugFileStruct.file       = debugFile;
 
-    strncpy(debugFileStruct.filePath,   filePath,   sizeof(debugFileStruct.filePath) - 1);
-    strncpy(debugFileStruct.folderPath, folderName, sizeof(debugFileStruct.filePath) - 1);
+    strncpy(debugFileStruct.folderPath, folderName, sizeof(filePath) - 1);
 
     debugFileStruct.graphCount = 0;
-    if (!CopyFile(DUMP_SAMPLE_PATH, filePath, FALSE))
+    if (!CopyFile(DUMP_HEADER_PATH, filePath, FALSE))
     {
         printf("LIST DUMP: Sample copy error");
     }
@@ -87,7 +90,7 @@ list_error_t listVerifier(const list_t *const list, bool firstInit, dump_file*co
         return noListProblem;
     }
 
-    if(list->capacity < 0)
+    if(list->capacity > SIZE_T_CHECKER)
     {
         ERROR_PRINTF("LIST: Capacity problem");
         listDump(list, debugFile);
@@ -115,13 +118,13 @@ list_error_t listVerifier(const list_t *const list, bool firstInit, dump_file*co
         return nextNullPointerListProblem;
     }
 
-    int pointerH = list->next[0];
-    int pointerT = list->prev[0];
+    size_t pointerH = list->next[0];
+    size_t pointerT = list->prev[0];
 
     for(size_t i = 0; i < list->elementCount; i++)
     {
-        if(pointerH < 0 || pointerH >= list->capacity ||
-           pointerT < 0 || pointerT >= list->capacity)
+        if(pointerH > SIZE_T_CHECKER || pointerH >= list->capacity ||
+           pointerT > SIZE_T_CHECKER || pointerT >= list->capacity)
         {
             ERROR_PRINTF("LIST: Index of jumping to new element out of range");
             listDump(list, debugFile);
@@ -151,68 +154,10 @@ list_error_t listVerifier(const list_t *const list, bool firstInit, dump_file*co
 
 #endif
 
-void listDump(const list_t *const list, dump_file*const dumpFile)
-{
-    assert(list);
-    assert(dumpFile);
-    if(dumpFile == NULL)
-    {
-        ERROR_PRINTF("Debug file pointer - NULL pointer");
-        return;
-    }
-
-    size_t folderNameLength = strnlen(dumpFile->filePath, sizeof(dumpFile->filePath));
-
-    if (folderNameLength == sizeof(dumpFile->filePath) || dumpFile->file == NULL)
-    {
-        ERROR_PRINTF("Debug file struct is corrupted");
-        return;
-    }
-
-    FILE* mainLogFile = fopen(dumpFile->filePath, "a");
-    if  (mainLogFile == NULL)
-    {
-        ERROR_PRINTF("Cannot open dump file");
-        return;
-    }
-
-    char graphFileName[100] = "";
-    snprintf(graphFileName, sizeof(graphFileName), "%s/graph_%d.dot", dumpFile->folderPath, dumpFile->graphCount);
-    FILE* graphFile = fopen(graphFileName, "a");
-    if  (graphFile == NULL)
-    {
-        ERROR_PRINTF("Cannot open graph_%d.dot file", dumpFile->graphCount);
-        return;
-    }
-    dumpFile->graphCount++;
-
-    fprintf(graphFile,
-        "digraph G {\n"
-        "  rankdir=LR;\n"
-        "  bgcolor=\"#0a0c10\";\n"
-        "  splines=ortho;\n"
-        "  nodesep=0.8;\n"
-        "  node[shape=Mrecord, style=filled, fillcolor=\"#b82222\", color=\"#4c0000\", fontname=Monospace, fontcolor=\"#65B7B7\"];\n"
-        "  edge[color=\"#f9f9f7\", arrowhead=normal];\n"
-        "  {rank = same; graph_0; main}\n"
-        "  {rank = same; free_0; free}\n"
-        "  main  [shape=Mrecord, label=\"Main data\", style=\"filled\", fillcolor=\"#1ca8a3\", color=\"#192832\", fontcolor =\"#131515\"];\n"
-        "  free  [shape=Mrecord, label=\"Free \\<%d\\>\", style=\"filled\", fillcolor=\"#1ca8a3\", color=\"#192832\", fontcolor =\"#131515\"];\n",
-        list->free_element
-    );
 
 
 
-    for(int i = 0; i < list->capacity; i++)
-    {
-        fprintf(mainLogFile, "[%d] = <%d>, prev = <%d>, next = <%d>\n", i, list->data[i], list->prev[i], list->next[i]);
-    }
-
-    fclose(mainLogFile);
-    fclose(graphFile);
-}
-
-list_error_t listInit(list_t *const list, int list_capacity ON_DEBUG(, dump_file*const dumpFile))
+list_error_t listInit(list_t *const list, size_t list_capacity ON_DEBUG(, dump_file*const dumpFile))
 {
     assert(list);
 
@@ -222,7 +167,7 @@ list_error_t listInit(list_t *const list, int list_capacity ON_DEBUG(, dump_file
         return problem1;
 #endif
 
-    if (list_capacity < 0)
+    if (list_capacity > SIZE_MAX)
     {
         ERROR_PRINTF("Wrong capacity value");
         return capacityListProblem;
@@ -234,33 +179,33 @@ list_error_t listInit(list_t *const list, int list_capacity ON_DEBUG(, dump_file
         return capacityListProblem;
     }
 
-    list->capacity = list_capacity;
+    list->capacity      = list_capacity;
 
-    list->data     = (list_element_t*)calloc(list_capacity, sizeof(list_element_t));
+    list->data          = (list_element_t*)calloc(list_capacity, sizeof(list_element_t));
     assert(list->data);
 
-    list->next     = (int*)           calloc(list_capacity, sizeof(int));
+    list->next          = (size_t*)           calloc(list_capacity, sizeof(size_t));
     assert(list->next);
 
-    list->prev     = (int*)           calloc(list_capacity, sizeof(int));
+    list->prev          = (size_t*)           calloc(list_capacity, sizeof(size_t));
     assert(list->prev);
 
-    list->data[0]      = LIST_POISON_VALUE;
+    list->data[0]       = LIST_POISON_VALUE;
 
-    list->next[0]      = 0;
+    list->next[0]       = 0;
 
-    list->prev[0]      = 0;
+    list->prev[0]       = 0;
 
-    list->free_element = 1;
+    list->free_element  = 1;
 
 #ifdef LIST_DEBUG
-    list->elementCount = 0;
+    list->elementCount  = 0;
 #endif
 
-    for (int i = 1; i < list_capacity; i++)
+    for (size_t i = 1; i < list_capacity; i++)
     {
-        list->next[i] = (i == list_capacity - 1) ? 0 : i + 1;
-        list->prev[i] = -1;
+        list->next[i] = (i == list_capacity - 1) ? LAST_ELEM_POISON_VAL : i + 1;
+        list->prev[i] = SIZE_MAX;
     }
 
 #ifdef LIST_DEBUG
@@ -273,31 +218,30 @@ list_error_t listInit(list_t *const list, int list_capacity ON_DEBUG(, dump_file
 }
 
 
-list_error_t insertElem(list_t *const list, const list_element_t value, const int position ON_DEBUG(, dump_file*const dumpFile))
+list_error_t insertElem(list_t *const list, const list_element_t value, const list_position_t* positionIns, list_position_t* outPosition ON_DEBUG(, dump_file*const dumpFile))
 {
-//TODO: убрать каст в проверках верификатора
 #ifdef LIST_DEBUG
-    int problem1 = listVerifier(list, false, dumpFile);
-    if ((list_error_t) problem1 != noListProblem)
-        return (list_error_t) problem1;
+    list_error_t problem1 = listVerifier(list, false, dumpFile);
+    if (problem1 != noListProblem)
+        return problem1;
 #endif
-
+    size_t position = positionIns->pos;
     assert(list);
 
-    if (position > list->prev[0] || position < 0)
+    if (position > list->prev[0] || position > SIZE_T_CHECKER)
     {
         ERROR_PRINTF("LIST: Element position out of list range");
         return positionElementListProblem;
     }
 
-    int free      = list->free_element;
-    int next_free = list->next[free];
-    int next      = list->next[position];
+    size_t free      = list->free_element;
+    size_t next_free = list->next[free];
+    size_t next      = list->next[position];
 
 #ifdef LIST_DEBUG
     list->elementCount++;
 #endif
-
+    outPosition->pos    = free;
     list->data[free]     = value;
     list->next[position] = free;
     list->next[free]     = next;
@@ -306,26 +250,27 @@ list_error_t insertElem(list_t *const list, const list_element_t value, const in
     list->free_element   = next_free;
 
 #ifdef LIST_DEBUG
-    int problem2 = listVerifier(list, false, dumpFile);
-    if ((list_error_t) problem2 != noListProblem)
-        return (list_error_t) problem2;
+    list_error_t problem2 = listVerifier(list, false, dumpFile);
+    if ( problem2 != noListProblem)
+        return problem2;
 #endif
 
     return noListProblem;
 }
 
 
-list_error_t deleteElem(list_t *const list, const int position ON_DEBUG(, dump_file*const dumpFile))
+list_error_t deleteElem(list_t *const list, const list_position_t* positionDel, list_position_t* outPosition ON_DEBUG(, dump_file*const dumpFile))
 {
 #ifdef LIST_DEBUG
-    int problem1 = listVerifier(list, false, dumpFile);
-    if ((list_error_t) problem1 != noListProblem)
-        return (list_error_t) problem1;
+    list_error_t problem1 = listVerifier(list, false, dumpFile);
+    if ( problem1 != noListProblem)
+        return problem1;
 #endif
 
+    size_t position = positionDel->pos;
     assert(list);
 
-    if (position > list->prev[0] || position < 0 || position == 0)
+    if (position > list->prev[0] || position > SIZE_T_CHECKER || position == 0)
     {
         ERROR_PRINTF("LIST: Element position out of list range");
         return positionElementListProblem;
@@ -333,36 +278,36 @@ list_error_t deleteElem(list_t *const list, const int position ON_DEBUG(, dump_f
 
     list->data[position] = 0;
 
-    int next = list->next[position];
-    int prev = list->prev[position];
-
+    size_t next         = list->next[position];
+    size_t prev         = list->prev[position];
+    outPosition->pos    = prev;
 #ifdef LIST_DEBUG
     list->elementCount--;
 #endif
 
     list->next[position] = list->free_element;
-    list->prev[position] = -1;
+    list->prev[position] = SIZE_MAX;
     list->next[prev]     = next;
     list->prev[next]     = prev;
     list->free_element   = position;
 
 #ifdef LIST_DEBUG
-    int problem2 = listVerifier(list, false, dumpFile);
-    if ((list_error_t) problem2 != noListProblem)
-        return (list_error_t) problem2;
+    list_error_t problem2 = listVerifier(list, false, dumpFile);
+    if (problem2 != noListProblem)
+        return problem2;
 #endif
 
     return noListProblem;
 }
 
 
-list_element_t getElement(const list_t *const list, const int position)
+list_element_t getElement(const list_t *const list, const list_position_t* position)
 {
     assert(list);
-    if (position > list->capacity || position < 1)
+    if (position->pos > list->capacity || position->pos < 1)
     {
         ERROR_PRINTF("LIST: Element position out of list range");
         return positionElementListProblem;
     }
-    return list->data[position];
+    return list->data[position->pos];
 }
